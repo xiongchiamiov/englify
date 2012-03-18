@@ -1,5 +1,9 @@
 # encoding: utf-8
 
+# May you recognize your weaknesses and share your strengths.
+# May you share freely, never taking more than you give.
+# May you find love and love everyone you find.
+
 require 'rbrainz'
 
 # Trying to match on an artist whose name is in crazy moonrunes causes REXML to
@@ -23,6 +27,10 @@ def englify(name)
 		)
 		query = MusicBrainz::Webservice::Query.new
 		artists = query.get_artists(filter)
+		# Can't find 'em?  Just assume they're alright.
+		if artists[0].nil?
+			return name
+		end
 		artist = artists[0].entity
 		
 		# This *should* work, but it gives us nothing.
@@ -33,9 +41,11 @@ def englify(name)
 			:aliases => true
 		)
 		artist = query.get_artist_by_id(id, artist_includes)
-		return artist.aliases[0]
+		englifiedName = artist.aliases[0].to_s
+		if englifiedName == ''
+			englifiedName = name
+		end
+		
+		return englifiedName
 end
-
-name = '菅野よう子'
-puts englify(name)
 
